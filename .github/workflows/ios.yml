@@ -1,6 +1,9 @@
 name: iOS Build
 on: [push, workflow_dispatch]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-latest
@@ -11,7 +14,7 @@ jobs:
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v2
         with:
-          version: "4.3.0"
+          version: "4.7.2"
           use-dotnet: false
           include-templates: true
 
@@ -23,19 +26,39 @@ jobs:
       - name: Build Xcode Project
         run: |
           cd build/ios
-          # Sideloadly doesn't need signature. 
-          # Disable signing so xcodebuild doesn't fail.
-          xcodebuild -project SurviveTest.xcodeproj -scheme SurviveTest -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
-          
+          xcodebuild -project SurviveTest.xcodeproj \
+            -scheme SurviveTest \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath derived_data \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
       - name: Package IPA
         run: |
-          cd build/ios/build/Release-iphoneos
+          APP_PATH=$(find build/ios -name "SurviveTest.app" -type d | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            echo "Error: SurviveTest.app not found!"
+            exit 1
+          fi
+          echo "Found app at: $APP_PATH"
           mkdir -p Payload
-          cp -r SurviveTest.app Payload/
-          zip -r ../../../../SurviveTest.ipa Payload
-          
+          cp -R "$APP_PATH" Payload/
+          zip -r SurviveTest.ipa Payload
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SurviveTest-iOS
           path: SurviveTest.ipa
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        continue-on-error: true
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: "Survive Test iOS Build #${{ github.run_number }}"
+          body: "Survive Test iOS .ipa package for sideloading (Sideloadly, TrollStore, AltStore, etc.)"
+          files: SurviveTest.ipa
