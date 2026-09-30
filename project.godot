@@ -17,7 +17,6 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 GlobalSettings="*res://GlobalSettings.gd"
 
 [display]
@@ -36,7 +35,7 @@ pointing/emulate_mouse_from_touch=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")
+enabled=PackedStringArray()
 
 [filesystem]
 
