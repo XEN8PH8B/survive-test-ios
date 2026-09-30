@@ -11,8 +11,9 @@ jobs:
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v2
         with:
-          version: 4.3
+          version: "4.3.0"
           use-dotnet: false
+          include-templates: true
 
       - name: Export Godot iOS Project
         run: |
