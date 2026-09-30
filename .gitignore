@@ -1,2 +1,4 @@
 .godot/
 build/
+addons/godot_ai/
+*.import
