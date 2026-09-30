@@ -1,0 +1,40 @@
+name: iOS Build
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.3
+          use-dotnet: false
+
+      - name: Export Godot iOS Project
+        run: |
+          mkdir -p build/ios
+          godot --headless --export-release "iOS" build/ios/SurviveTest.xcodeproj
+
+      - name: Build Xcode Project
+        run: |
+          cd build/ios
+          # Sideloadly doesn't need signature. 
+          # Disable signing so xcodebuild doesn't fail.
+          xcodebuild -project SurviveTest.xcodeproj -scheme SurviveTest -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
+          
+      - name: Package IPA
+        run: |
+          cd build/ios/build/Release-iphoneos
+          mkdir -p Payload
+          cp -r SurviveTest.app Payload/
+          zip -r ../../../../SurviveTest.ipa Payload
+          
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SurviveTest-iOS
+          path: SurviveTest.ipa

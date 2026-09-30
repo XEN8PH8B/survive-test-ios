@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://game_scene_123"]
+
+[ext_resource type="PackedScene" uid="uid://ground_uid_123" path="res://Ground.tscn" id="1_ground"]
+[ext_resource type="PackedScene" uid="uid://player_uid" path="res://Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://stone_item_123" path="res://StoneItem.tscn" id="3_stone"]
+
+[node name="Game" type="Node3D"]
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+
+[node name="StoneItem1" parent="." instance=ExtResource("3_stone")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -3)
+
+[node name="StoneItem2" parent="." instance=ExtResource("3_stone")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.5, -4)
+
+[node name="StoneItem3" parent="." instance=ExtResource("3_stone")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.5, -3)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 5, 0)
+shadow_enabled = true
+
+[node name="Ground" parent="." instance=ExtResource("1_ground")]
